@@ -3,9 +3,9 @@ import WorkflowCanvas from './components/WorkflowCanvas';
 import {
     useNodesState,
     useEdgesState,
+    type Node,
+    type Edge
 } from '@xyflow/react';
-
-import {Node, Edge} from './types/ReactFlow.types'
 
 function App() {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>(

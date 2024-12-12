@@ -3,10 +3,11 @@ import {
     ReactFlow,
     Controls,
     addEdge,
-    OnNodesChange,
-    OnEdgesChange
+    type OnNodesChange,
+    type OnEdgesChange,
+    type Node,
+    type Edge
 } from '@xyflow/react';
-import {Node, Edge} from '../types/ReactFlow.types'
 
 import '@xyflow/react/dist/style.css';
 
