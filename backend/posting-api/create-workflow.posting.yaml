@@ -1,0 +1,12 @@
+name: Create workflow
+method: POST
+url: http://localhost:3000/workflows/new
+body:
+  content: |-
+    {
+      "roba1":1
+    }
+  content_type: application/json
+headers:
+- name: content-type
+  value: application/json
