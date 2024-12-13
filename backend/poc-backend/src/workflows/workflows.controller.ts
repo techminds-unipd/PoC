@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
 import { WorkflowDto } from './dto/workflow.dto';
 import { CreateWorkflowDto } from './dto/createWorkflow.dto';
@@ -30,7 +38,14 @@ export class WorkflowsController {
 
   //CREATE
   @Post('/new')
-  async createWorkflow(@Body() newWorkflowDto: CreateWorkflowDto) {
+  async create(@Body() newWorkflowDto: CreateWorkflowDto) {
     return this.workflowsService.create(newWorkflowDto);
+  }
+
+  //DELETE
+  //Se la cancellazione va a buon fine ritorna il workflow cancellato
+  @Delete('/:id')
+  async delete(@Param('id') id: string) {
+    return this.workflowsService.delete(id);
   }
 }

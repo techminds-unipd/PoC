@@ -4,7 +4,7 @@ url: http://localhost:3000/workflows/new
 body:
   content: |-
     {
-      "roba1":1
+      "name":"Questo è il mio primo bellissimo workflow"
     }
   content_type: application/json
 headers:

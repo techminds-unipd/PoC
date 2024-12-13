@@ -20,7 +20,7 @@ export class WorkflowsService {
   async findOne(id: string): Promise<Workflow> {
     if (mongoose.Types.ObjectId.isValid(id)) {
       const workflowFound = await this.workflowModel
-        .findOne({ _id: id })
+        .findOne({ _id: new mongoose.Types.ObjectId(id) })
         .exec();
       if (!workflowFound) {
         throw new HttpException('Workflow not found', HttpStatus.NOT_FOUND);
@@ -31,7 +31,11 @@ export class WorkflowsService {
 
   async update(id: string, updateWorkflowDto: WorkflowDto): Promise<Workflow> {
     const updatedWorkflow = await this.workflowModel
-      .findByIdAndUpdate({ _id: id }, updateWorkflowDto, { new: true })
+      .findByIdAndUpdate(
+        { _id: new mongoose.Types.ObjectId(id) },
+        updateWorkflowDto,
+        { new: true },
+      )
       .exec();
     if (!updatedWorkflow)
       throw new HttpException('Workflow not found', HttpStatus.NOT_FOUND);
@@ -41,5 +45,17 @@ export class WorkflowsService {
   async create(createWorkflowDto: CreateWorkflowDto): Promise<Workflow> {
     const createdWorkflow = await this.workflowModel.create(createWorkflowDto);
     return createdWorkflow.save();
+  }
+
+  async delete(id: string): Promise<Workflow> {
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      const deletedWorkflow = await this.workflowModel
+        .findByIdAndDelete({ _id: new mongoose.Types.ObjectId(id) })
+        .exec();
+      if (!deletedWorkflow) {
+        throw new HttpException('Workflow not found', HttpStatus.NOT_FOUND);
+      }
+      return deletedWorkflow;
+    } else throw new HttpException('Id is not valid', HttpStatus.BAD_REQUEST);
   }
 }

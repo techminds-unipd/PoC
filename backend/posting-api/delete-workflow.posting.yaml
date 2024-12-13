@@ -1,0 +1,3 @@
+name: Delete workflow
+method: DELETE
+url: http://localhost:3000/workflows/
