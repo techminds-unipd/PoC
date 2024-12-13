@@ -1,12 +1,12 @@
 name: Update workflow
-method: POST
+method: PUT
 url: http://localhost:3000/workflows/2
 body:
   content: |-
     {
-      'id': 2,
-      'a': 1,
-      'b':2
+      "id": 2,
+      "a": 1,
+      "b":2
     }
   content_type: application/json
 headers:

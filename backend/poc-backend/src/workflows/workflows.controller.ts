@@ -1,16 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { WorkflowsService } from './workflows.service';
-import { WorkflowDto } from './workflow.dto';
-import { NewWorkflowDto } from './new-workflow.dto';
-import { WorkflowsListDto } from './workflows-list.dto';
+import { WorkflowDto } from './dto/workflow.dto';
+import { CreateWorkflowDto } from './dto/createWorkflow.dto';
+import { Workflow } from 'src/schemas/workflow.schema';
 
 @Controller('workflows')
 export class WorkflowsController {
@@ -18,32 +10,27 @@ export class WorkflowsController {
 
   //Restituisce un array con gli id dei workflow disponibili
   @Get()
-  getWorkflows(): Promise<WorkflowsListDto> {
-    return this.workflowsService.getWorkflows();
+  async findAll(): Promise<Workflow[]> {
+    return this.workflowsService.findAll();
   }
 
   //READ
   //Restituisce il JSON che descrive il workflow se esiste, altrimenti 404
-  @Get('/:workflowId')
-  getSelectedWorkflow(
-    @Param('workflowId', ParseIntPipe) workflowId: number,
-  ): Promise<WorkflowDto> {
-    return this.workflowsService.getSelectedWorkflow(workflowId);
+  @Get('/:id')
+  async findOne(@Param('id') id: string): Promise<Workflow> {
+    return this.workflowsService.findOne(id);
   }
 
   //UPDATE
   //Aggorna il workflow
-  @Put('/:workflowId')
-  updateWorkflow(
-    @Param('workflowId', ParseIntPipe) workflowId: number,
-    @Body() updatedWorkflow: WorkflowDto,
-  ): Promise<WorkflowDto> {
-    return this.workflowsService.updateWorkflow(workflowId, updatedWorkflow);
+  @Put('/:id')
+  async update(@Param('id') id: string, @Body() updatedWorkflow: WorkflowDto) {
+    return this.workflowsService.update(id, updatedWorkflow);
   }
 
   //CREATE
   @Post('/new')
-  createWorkflow(@Body() newWorkflow: NewWorkflowDto): Promise<WorkflowDto> {
-    return this.workflowsService.createWorkflow(newWorkflow);
+  async createWorkflow(@Body() newWorkflowDto: CreateWorkflowDto) {
+    return this.workflowsService.create(newWorkflowDto);
   }
 }
