@@ -4,6 +4,7 @@ export class Node {
 }
 
 export class Edge {
-  readonly id: number;
+  readonly fromNodeId: number;
+  readonly toNodeId: number;
   readonly action: string;
 }
