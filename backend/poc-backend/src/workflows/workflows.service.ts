@@ -58,4 +58,9 @@ export class WorkflowsService {
       return deletedWorkflow;
     } else throw new HttpException('Id is not valid', HttpStatus.BAD_REQUEST);
   }
+
+  //TODO
+  async execute(id: string): Promise<Record<string, any>> {
+    return { _id: id };
+  }
 }

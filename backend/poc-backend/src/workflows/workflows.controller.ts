@@ -48,4 +48,10 @@ export class WorkflowsController {
   async delete(@Param('id') id: string) {
     return this.workflowsService.delete(id);
   }
+
+  //EXECUTE
+  @Get('/:id/execute')
+  async execute(@Param('id') id: string) {
+    return this.workflowsService.execute(id);
+  }
 }
