@@ -1,18 +1,16 @@
 import { Module } from '@nestjs/common';
-import { WorkflowsController } from './workflows.controller';
-import { WorkflowsService } from './workflows.service';
+import { AgentService } from './agent.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Workflow, WorkflowSchema } from 'src/schemas/workflow.schema';
-import { AgentModule } from './agent/agent.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Workflow.name, schema: WorkflowSchema },
     ]),
-    AgentModule,
   ],
-  controllers: [WorkflowsController],
-  providers: [WorkflowsService],
+  controllers: [],
+  providers: [AgentService],
+  exports: [AgentService],
 })
-export class WorkflowsModule {}
+export class AgentModule {}
