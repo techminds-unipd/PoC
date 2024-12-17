@@ -20,13 +20,16 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@langchain/core": "^0.3.23",
+    "@langchain/community": "^0.3.19",
+    "@langchain/core": "^0.3.24",
     "@langchain/groq": "^0.1.2",
+    "@langchain/langgraph": "^0.2.34",
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.3.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/mongoose": "^10.1.0",
     "@nestjs/platform-express": "^10.0.0",
-    "dotenv": "^16.4.7",
+    "googleapis": "^144.0.0",
     "langchain": "^0.3.7",
     "mongoose": "^8.8.4",
     "reflect-metadata": "^0.2.0",
@@ -74,6 +77,6 @@
   },
   "overrides": {
     "ajv": "^8.17.1",
-  "whatwg-url": "^14.0.0"
+    "whatwg-url": "^14.0.0"
   }
 }

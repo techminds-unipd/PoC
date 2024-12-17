@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Workflow, WorkflowSchema } from 'src/schemas/workflow.schema';
+import { ConfigService } from '@nestjs/config';
+
 
 @Module({
   imports: [
