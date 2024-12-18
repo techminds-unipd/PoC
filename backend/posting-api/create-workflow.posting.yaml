@@ -1,0 +1,29 @@
+name: Create workflow
+method: POST
+url: http://localhost:3000/workflows/new
+body:
+  content: |-
+    {
+      "name":"Questo è il mio primo bellissimo workflow",
+      "nodes":[
+        {
+          "id":1,
+          "service":"gmail"
+        },
+        {
+          "id":2,
+          "service":"docs"
+        }
+      ],
+      "edges":[
+        {
+          "fromNodeId":1,
+          "toNodeId":2,
+          "action":"Leggi l'ultima mail non letta e scrivi le persone menzionate in un documento google."
+        }
+      ]
+    }
+  content_type: application/json
+headers:
+- name: content-type
+  value: application/json
