@@ -7,7 +7,11 @@ import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ConfigService } from '@nestjs/config';
 import {
   GmailBaseToolParams,
+  GmailCreateDraft,
   GmailGetMessage,
+  GmailGetThread,
+  GmailSearch,
+  GmailSendMessage,
 } from '@langchain/community/tools/gmail';
 import { initializeAgentExecutorWithOptions } from 'langchain/agents';
 
@@ -16,15 +20,22 @@ export class AgentService {
   constructor(private readonly configService: ConfigService) {}
 
   async execute(workflow: WorkflowDocument): Promise<Record<string, any>> {
-    console.log(this.configService.get<string>('GMAIL_CLIENT_EMAIL'));
     const gmailParams: GmailBaseToolParams = {
       credentials: {
-        keyfile: '../../../google_secret2.json.env',
+        clientEmail: 'techminds.unipd@gmail.com',
+        privateKey: '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',
+        //keyfile: './token.json',
       },
-      scopes: ['https://mail.google.com'],
+      scopes: ['https://www.googleapis.com/auth/gmail.readonly'],
     };
 
-    const tools: StructuredTool[] = [new GmailGetMessage(gmailParams)];
+    const tools: StructuredTool[] = [
+      new GmailGetMessage(gmailParams),
+      new GmailCreateDraft(gmailParams),
+      new GmailGetThread(gmailParams),
+      new GmailSearch(gmailParams),
+      new GmailSendMessage(gmailParams),
+    ];
     const model = new ChatGroq({
       model: 'llama-3.1-70b-versatile',
       temperature: 0,
@@ -35,7 +46,7 @@ export class AgentService {
       verbose: true,
     });
 
-    const input = "leggi l'ultima mail e fanne un riassunto";
+    const input = "Riesci a leggere le mail presenti nell'inbox usando le credenziali fornite?";
     const createResult = await gmailAgent.invoke({ input: input });
     console.log('Create result', createResult);
     return { status: 'executed' };
