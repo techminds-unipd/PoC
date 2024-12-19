@@ -1,39 +1,45 @@
-import WorkflowCanvas from './components/Workflow/WorkflowCanvas';
-import WorkflowSaver from './components/WorkflowSaver';
-import {
-    useNodesState,
-    useEdgesState,
-    type Node,
-    type Edge,
-    type Position,
-} from '@xyflow/react';
+//import Workflow from './components/Workflow'
+//<Workflow
+//    id={"67644a979b68962e3e1ae9cc"}
+///>
+import { useState, useEffect } from 'react';
 
+interface Node {
+    readonly id: number;
+    readonly service: 'gmail' | 'docs';
+}
+
+interface Edge {
+    readonly fromNodeId: number;
+    readonly toNodeId: number;
+    readonly action: string;
+}
+
+interface Workflow {
+    _id: string;
+    name: string;
+    nodes: Node[];
+    edges: Edge[];
+}
 
 function App() {
-    const [nodes, setNodes, onNodesChange] = useNodesState<Node>(
-        [
-            { id: '1', position: { x: 0, y: 0 }, data: { label: '1' }, type: 'input', sourcePosition: 'right' as Position},
-            { id: '2', position: { x: 300, y: 0 }, data: { label: '2' }, targetPosition: 'left' as Position, sourcePosition: 'right' as Position }
-        ]
-    );
-    const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+    const [workflows, setWorkflows] = useState<Workflow[]>([]);
+
+    useEffect(() => {
+        fetch("http://localhost:3000/workflows")
+            .then(response => response.json())
+            .then(data => setWorkflows(data))
+            .catch(error => console.error(error));
+    }, []);
 
     return (
-        <>
-        <WorkflowCanvas
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            setNodes={setNodes}
-            setEdges={setEdges}
-        />
-        <WorkflowSaver
-            nodes={nodes}
-            edges={edges}
-        />
-        </>
+        <div>
+            <ul>
+                {workflows.map(workflow => <li key={workflow._id}><a href="">{workflow.name}</a></li>)}
+            </ul>
+        </div>
     );
 }
 
-export default App
+export default App;
