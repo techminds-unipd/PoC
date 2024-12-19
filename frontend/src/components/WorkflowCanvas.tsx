@@ -31,6 +31,9 @@ interface WorkflowCanvasProps {
 let id = 0;
 const getId = () => `dndnode_${id++}`;
 
+let edgeId = 0;
+const getEdgeId = () => edgeId++;
+
 const edgeTypes = {
     editable: EditableEdge,
 };
@@ -41,7 +44,10 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
     const [nodeType] = useDnD();
 
     const onConnect = useCallback(
-        (params:any) => setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', style: {backgroundColor: 'red'}, label: "Inserisici l'automazione"}, eds)),
+        (params:any) => {
+            const id = getEdgeId();
+            setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', label: "Ciao", id: id}, eds))
+        },
         [],
     );
 
