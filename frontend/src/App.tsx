@@ -1,4 +1,5 @@
-import WorkflowCanvas from './components/WorkflowCanvas';
+import WorkflowCanvas from './components/Workflow/WorkflowCanvas';
+import WorkflowSaver from './components/WorkflowSaver';
 import {
     useNodesState,
     useEdgesState,
@@ -18,6 +19,7 @@ function App() {
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
     return (
+        <>
         <WorkflowCanvas
             nodes={nodes}
             edges={edges}
@@ -26,6 +28,11 @@ function App() {
             setNodes={setNodes}
             setEdges={setEdges}
         />
+        <WorkflowSaver
+            nodes={nodes}
+            edges={edges}
+        />
+        </>
     );
 }
 
