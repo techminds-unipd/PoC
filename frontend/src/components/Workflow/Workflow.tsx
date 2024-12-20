@@ -1,5 +1,6 @@
 import WorkflowCanvas from './WorkflowCanvas/WorkflowCanvas';
 import WorkflowSaver from './WorkflowSaver';
+import WorkflowExecutor from './WorkflowExecutor';
 import {
     useNodesState,
     useEdgesState,
@@ -34,6 +35,7 @@ function Workflow() {
 
     return (
         <>
+        <a href="/">Torna alla home</a>
         <WorkflowCanvas
             nodes={nodes}
             edges={edges}
@@ -47,6 +49,9 @@ function Workflow() {
             edges={edges}
             id={id as string}
             name={name as string}
+        />
+        <WorkflowExecutor
+            id={id as string}
         />
         </>
     );
