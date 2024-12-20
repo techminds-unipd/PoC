@@ -7,13 +7,14 @@ interface WorkflowSaverProps {
     nodes: Node[];
     edges: Edge[];
     id: string;
+    name: string;
 }
 
-function WorkflowSaver({nodes, edges, id}: WorkflowSaverProps) {
+function WorkflowSaver({nodes, edges, id, name}: WorkflowSaverProps) {
 
     const sendData = () => {
         const workflow = {
-            name: 'Non è ancora possibile dare un nome ai workflow',
+            name: name,
             nodes: nodes.map((node) => {return {id: node.id, service: "gmail"}}),
             edges: edges.map((edge) => {return {fromNodeId: edge.source, toNodeId: edge.target, action: edge.label}}),
             _id: id

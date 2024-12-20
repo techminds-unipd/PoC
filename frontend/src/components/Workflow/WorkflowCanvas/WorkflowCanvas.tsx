@@ -10,7 +10,8 @@ import {
     type Edge,
     type OnNodesChange,
     type OnEdgesChange,
-    MarkerType
+    MarkerType,
+    Position
 } from '@xyflow/react';
 
 import Sidebar from './Sidebar';
@@ -28,12 +29,6 @@ interface WorkflowCanvasProps {
     setEdges: React.Dispatch<React.SetStateAction<Edge[]>>;
 }
 
-let id = 0;
-const getId = () => `dndnode_${id++}`;
-
-let edgeId = 0;
-const getEdgeId = () => edgeId++;
-
 const edgeTypes = {
     editable: EditableEdge,
 };
@@ -42,6 +37,12 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
     const reactFlowWrapper = useRef(null);
     const { screenToFlowPosition } = useReactFlow();
     const [nodeType] = useDnD();
+
+    let nodeId = nodes.length;
+    const getNodeId = () => nodeId++;
+
+    let edgeId = edges.length;
+    const getEdgeId = () => edgeId++;
 
     const onConnect = useCallback(
         (params:any) => {
@@ -70,10 +71,12 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                 y: event.clientY,
             });
             const newNode: Node = {
-                id: getId(),
+                id: String(getNodeId()),
                 type: `${nodeType}`,
                 position,
-                data: { label: `${nodeType} node` },
+                data: { label: `${nodeType} node ${nodeId-1}` },
+                sourcePosition: 'right' as Position,
+                targetPosition: 'left' as Position
             };
 
             setNodes((nds: Node[]) => nds.concat(newNode));
