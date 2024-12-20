@@ -1,5 +1,5 @@
 import WorkflowCanvas from './Workflow/WorkflowCanvas';
-import WorkflowSaver from './WorkflowSaver';
+import WorkflowSaver from './Workflow/WorkflowSaver';
 import {
     useNodesState,
     useEdgesState,
