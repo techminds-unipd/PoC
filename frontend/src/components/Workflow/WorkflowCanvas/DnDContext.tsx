@@ -1,12 +1,12 @@
 import { createContext, useContext, useState } from 'react';
 
-const DnDContext = createContext([null, (_) => {}]);
+const DnDContext = createContext([null, (_:any) => {}]);
 
-export const DnDProvider = ({ children }) => {
-    const [typeDnD, setTypeDnD] = useState(null);
+export const DnDProvider = ({ children } : any) => {
+    const [serviceDnD, setServiceDnD] = useState(null);
 
     return (
-        <DnDContext.Provider value={[typeDnD, setTypeDnD]}>
+        <DnDContext.Provider value={[serviceDnD, setServiceDnD]}>
         {children}
         </DnDContext.Provider>
     );

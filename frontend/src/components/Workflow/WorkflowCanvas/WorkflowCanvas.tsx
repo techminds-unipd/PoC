@@ -14,7 +14,7 @@ import {
     Position
 } from '@xyflow/react';
 
-import Sidebar from './Sidebar';
+import Sidebar from './Sidebar/Sidebar';
 import { DnDProvider, useDnD } from './DnDContext';
 import EditableEdge from './EditableEdge';
 
@@ -36,7 +36,7 @@ const edgeTypes = {
 const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges}: WorkflowCanvasProps) => {
     const reactFlowWrapper = useRef(null);
     const { screenToFlowPosition } = useReactFlow();
-    const [nodeType] = useDnD();
+    const [nodeService] = useDnD();
 
     let nodeId = nodes.length;
     const getNodeId = () => nodeId++;
@@ -46,8 +46,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
 
     const onConnect = useCallback(
         (params:any) => {
-            const id = getEdgeId();
-            setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', label: "Ciao", id: id}, eds))
+            setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', label: "Inserisci l'automazione che desideri", id: getEdgeId()}, eds))
         },
         [],
     );
@@ -62,7 +61,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
             event.preventDefault();
 
             // check if the dropped element is valid
-            if (!nodeType) {
+            if (!nodeService) {
                 return;
             }
 
@@ -72,16 +71,15 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
             });
             const newNode: Node = {
                 id: String(getNodeId()),
-                type: `${nodeType}`,
                 position,
-                data: { label: `${nodeType} node ${nodeId-1}` },
+                data: { label: nodeService },
                 sourcePosition: 'right' as Position,
                 targetPosition: 'left' as Position
             };
 
             setNodes((nds: Node[]) => nds.concat(newNode));
         },
-        [screenToFlowPosition, nodeType],
+        [screenToFlowPosition, nodeService],
     );
 
     return (
