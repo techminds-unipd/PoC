@@ -11,7 +11,9 @@ import {
     type OnNodesChange,
     type OnEdgesChange,
     MarkerType,
-    Position
+    Position,
+    ConnectionLineType,
+    getOutgoers
 } from '@xyflow/react';
 
 import Sidebar from './Sidebar/Sidebar';
@@ -37,6 +39,8 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
     const reactFlowWrapper = useRef(null);
     const { screenToFlowPosition } = useReactFlow();
     const [nodeService] = useDnD();
+
+    const { getNodes, getEdges } = useReactFlow();
 
     let nodeId = nodes.length;
     const getNodeId = () => nodeId++;
@@ -82,6 +86,31 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
         [screenToFlowPosition, nodeService],
     );
 
+    // https://reactflow.dev/examples/interaction/prevent-cycles
+    const isValidConnection = useCallback(
+        (connection:any) => {
+            // we are using getNodes and getEdges helpers here
+            // to make sure we create isValidConnection function only once
+            const nodes = getNodes();
+            const edges = getEdges();
+            const target = nodes.find((node: Node) => node.id === connection.target);
+            const hasCycle = (node: Node, visited = new Set()) => {
+                if (visited.has(node.id)) return false;
+
+                visited.add(node.id);
+
+                for (const outgoer of getOutgoers(node, nodes, edges)) {
+                    if (outgoer.id === connection.source) return true;
+                    if (hasCycle(outgoer, visited)) return true;
+                }
+            };
+
+            if (target && target.id === connection.source) return false;
+            return !hasCycle(target as Node);
+        },
+        [getNodes, getEdges],
+    );
+
     return (
         <div style={{width: "100%", height: "100%", display: "flex"}}>
             <Sidebar />
@@ -97,7 +126,9 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                     edgeTypes={edgeTypes}
                     fitView
                     style={{ backgroundColor: "#F7F9FB" }}
-                >
+                    connectionLineType={ConnectionLineType.Straight}
+                    isValidConnection={isValidConnection}
+                    minZoom={0.7}>
                     <Controls />
                     <Background />
                 </ReactFlow>
