@@ -128,7 +128,9 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                     style={{ backgroundColor: "#F7F9FB" }}
                     connectionLineType={ConnectionLineType.Straight}
                     isValidConnection={isValidConnection}
-                    minZoom={0.7}>
+                    minZoom={0.7}
+                    translateExtent={[[-1000,-600], [+1000,+600]]}
+                    nodeExtent={[[-1000,-600], [+1000,+600]]}>
                     <Controls />
                     <Background />
                 </ReactFlow>
