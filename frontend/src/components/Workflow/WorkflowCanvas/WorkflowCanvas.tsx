@@ -69,6 +69,10 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                 return;
             }
 
+            if (getNodes().length > 3) {
+                return;
+            }
+
             const position = screenToFlowPosition({
                 x: event.clientX,
                 y: event.clientY,
@@ -129,8 +133,8 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                     connectionLineType={ConnectionLineType.Straight}
                     isValidConnection={isValidConnection}
                     minZoom={0.7}
-                    translateExtent={[[-1000,-600], [+1000,+600]]}
-                    nodeExtent={[[-1000,-600], [+1000,+600]]}>
+                    translateExtent={[[-10,-600], [2000, 600]]}
+                    nodeExtent={[[-10,-600], [2000, 600]]}>
                     <Controls />
                     <Background />
                 </ReactFlow>
