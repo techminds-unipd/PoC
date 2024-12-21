@@ -23,10 +23,10 @@ export class AgentService {
   async execute(workflow: WorkflowDocument): Promise<Record<string, any>> {
     const gmailParams: GmailBaseToolParams = {
       credentials: {
-        clientEmail: 'techminds.unipd@gmail.com',
+        clientEmail: '',
         privateKey: '',
       },
-      scopes: ['https://www.googleapis.com/auth/gmail.readonly'],
+      scopes: ['https://mail.google.com/'],
     };
 
     const tools: StructuredTool[] = [
@@ -37,7 +37,7 @@ export class AgentService {
       new GmailSendMessage(gmailParams),
     ];
     const model = new ChatGroq({
-      model: 'llama3-groq-70b-8192-tool-use-preview',
+      model: 'llama3-70b-8192',
       temperature: 0,
     });
 
@@ -46,14 +46,15 @@ export class AgentService {
       verbose: true,
     });
 
-    const input =
-      "Riesci a leggere le mail presenti nell'inbox usando le credenziali fornite?";
+    const input = 'Read and summarize the latest email.';
     const createResult = await gmailAgent.invoke({ input: input });
     console.log('Create result', createResult);
     return { status: 'executed' };
   }
 
-  async execute_openai(workflow: WorkflowDocument): Promise<Record<string, any>> {
+  async execute_openai(
+    workflow: WorkflowDocument,
+  ): Promise<Record<string, any>> {
     const model = new OpenAI({
       temperature: 0,
       apiKey: this.configService.get<string>('OPENAI_API_KEY'),
