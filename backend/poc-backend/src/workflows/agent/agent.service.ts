@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { WorkflowDocument } from 'src/schemas/workflow.schema';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Workflow, WorkflowDocument } from 'src/schemas/workflow.schema';
 import { ChatGroq } from '@langchain/groq';
 import { StructuredTool } from '@langchain/core/tools';
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
@@ -15,12 +15,26 @@ import {
 } from '@langchain/community/tools/gmail';
 import { initializeAgentExecutorWithOptions } from 'langchain/agents';
 import { OpenAI } from '@langchain/openai';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class AgentService {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
+  ) {}
 
   async execute(workflow: WorkflowDocument): Promise<Record<string, any>> {
+    //Controllo se il workflow non ha nodi o archi
+    if (workflow.nodes.length === 0)
+      throw new HttpException('No edges', HttpStatus.BAD_REQUEST);
+    if (workflow.edges.length === 0)
+      throw new HttpException('No edges', HttpStatus.BAD_REQUEST);
+
+    return this.httpService.post('http://localhost:5000/execute', workflow);
+  }
+
+  async execute_groq(workflow: WorkflowDocument): Promise<Record<string, any>> {
     const gmailParams: GmailBaseToolParams = {
       credentials: {
         clientEmail: '',

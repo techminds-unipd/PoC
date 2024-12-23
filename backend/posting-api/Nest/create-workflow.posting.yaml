@@ -19,7 +19,7 @@ body:
         {
           "fromNodeId":1,
           "toNodeId":2,
-          "action":"Leggi l'ultima mail non letta e scrivi le persone menzionate in un documento google."
+          "action":"Leggi l'ultima mail e scrivi le persone menzionate in un documento google."
         }
       ]
     }

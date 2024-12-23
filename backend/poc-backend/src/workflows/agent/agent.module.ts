@@ -3,6 +3,7 @@ import { AgentService } from './agent.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Workflow, WorkflowSchema } from 'src/schemas/workflow.schema';
 import { ConfigService } from '@nestjs/config';
+import { HttpModule } from '@nestjs/axios';
 
 
 @Module({
@@ -10,6 +11,7 @@ import { ConfigService } from '@nestjs/config';
     MongooseModule.forFeature([
       { name: Workflow.name, schema: WorkflowSchema },
     ]),
+    HttpModule,
   ],
   controllers: [],
   providers: [AgentService],

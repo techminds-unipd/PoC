@@ -1,3 +1,9 @@
 name: Test
 method: POST
 url: http://localhost:5000/execute
+body:
+  content: '{}'
+  content_type: application/json
+headers:
+- name: content-type
+  value: application/json
