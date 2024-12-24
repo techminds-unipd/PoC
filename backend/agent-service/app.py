@@ -12,11 +12,7 @@ import pprint
 
 
 app = Flask(__name__)
-load_dotenv()
-if not os.getenv("GROQ_API_KEY"):
-    exit(1)
-llm = ChatGroq(model="llama-3.3-70b-versatile")
-SYSTEM_PROMPT="You are a bot that takes a request and uses the appropriate tools to satisfy it."
+
 
 @app.route("/execute", methods=['POST'])
 def execute():
@@ -41,3 +37,10 @@ def execute():
     #TODO: Capire come ottenere l'ultimo messaggio in formato clean
     return {'status': 'success'}
 
+if __name__ == '__main__':
+    load_dotenv()
+    if not os.getenv("GROQ_API_KEY"):
+        exit(1)
+    llm = ChatGroq(model="llama-3.3-70b-versatile")
+    SYSTEM_PROMPT="You are a bot that takes a request in italian or english and uses the appropriate tools to satisfy it. The final answer MUST BE in the same language as the user prompt, but the reasoning MUST BE in english."
+    app.run()
