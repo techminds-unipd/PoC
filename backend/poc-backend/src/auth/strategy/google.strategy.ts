@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Profile, Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Profile, Strategy } from 'passport-google-oauth20';
 import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from '../auth.service';
@@ -20,12 +20,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
     async validate(
         accessToken: string,
-        refreshToken: string,
+        _: string,
         profile: Profile,
-        done: VerifyCallback,
     ) {
-        console.log(accessToken);
-
-        // TODO Salvo le info dell'utente su mongo
+        const token = accessToken;
+        const profileId = profile.id;
+        await this.authService.add(profileId, token);
     }
 }
