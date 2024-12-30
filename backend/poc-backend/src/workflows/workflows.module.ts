@@ -7,16 +7,14 @@ import { User, UserSchema } from 'src/schemas/user.schema';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
-    imports: [
-        MongooseModule.forFeature([
-            { name: Workflow.name, schema: WorkflowSchema },
-        ]),
-        MongooseModule.forFeature([
-            { name: User.name, schema: UserSchema },
-        ]),
-        HttpModule,
-    ],
-    controllers: [WorkflowsController],
-    providers: [WorkflowsService],
+  imports: [
+    MongooseModule.forFeature([
+      { name: Workflow.name, schema: WorkflowSchema },
+    ]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    HttpModule,
+  ],
+  controllers: [WorkflowsController],
+  providers: [WorkflowsService],
 })
 export class WorkflowsModule {}

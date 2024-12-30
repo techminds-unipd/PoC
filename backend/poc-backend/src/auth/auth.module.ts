@@ -12,12 +12,12 @@ import { User, UserSchema } from 'src/schemas/user.schema';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-    ]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [AuthController],
-  providers: [ AuthService,GoogleStrategy,
+  providers: [
+    AuthService,
+    GoogleStrategy,
     { provide: 'AUTH_SERVICE', useClass: AuthService },
   ],
 })

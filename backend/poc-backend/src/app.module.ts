@@ -8,7 +8,7 @@ import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     WorkflowsModule,
-      AuthModule,
+    AuthModule,
     MongooseModule.forRoot('mongodb://root:password@localhost:27017/'),
   ],
   controllers: [AppController],
