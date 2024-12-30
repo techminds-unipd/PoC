@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BackendModel } from '../BackendModel';
+import * as BackendModel from '../BackendModel';
 
 interface CreateWorkflowProps {
     setLastCreatedWorkflow: React.Dispatch<React.SetStateAction<BackendModel.Workflow | undefined>>;

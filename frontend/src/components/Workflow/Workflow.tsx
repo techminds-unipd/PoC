@@ -11,7 +11,7 @@ import {
 } from '@xyflow/react';
 import { useEffect } from 'react';
 import { useParams } from "react-router";
-import { BackendModel } from '../../BackendModel';
+import * as BackendModel from '../../BackendModel';
 
 function Workflow() {
     const { id, name } = useParams();
@@ -31,7 +31,7 @@ function Workflow() {
                 }))
             })
             .catch(error => console.error(error));
-    }, []);
+    }, [id, setEdges, setNodes]);
 
     return (
         <>

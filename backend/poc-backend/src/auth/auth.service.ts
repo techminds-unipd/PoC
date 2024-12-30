@@ -24,7 +24,11 @@ export class AuthService {
     } else {
       // Otherwise update the token and expire date
       await this.userModel
-        .findByIdAndUpdate({ _id: userId }, { token: token, expiry: expireDate }, { new: true })
+        .findByIdAndUpdate(
+          { _id: userId },
+          { token: token, expiry: expireDate },
+          { new: true },
+        )
         .exec();
     }
   }
@@ -35,19 +39,16 @@ export class AuthService {
     return 'Google account connected! (Now you can close this window)';
   }
 
-  async status(): Promise<Boolean>  {
+  async status(): Promise<boolean> {
     const user = await this.userModel.findOne().exec();
     if (user != null) {
-      const isExpired =  user.expiry < new Date();
+      const isExpired = user.expiry < new Date();
 
       if (isExpired) {
-        await this.userModel
-          .findByIdAndDelete({ _id: user._id })
-          .exec();
-
+        await this.userModel.findByIdAndDelete({ _id: user._id }).exec();
       }
 
-      return !isExpired
+      return !isExpired;
     }
     return false;
   }

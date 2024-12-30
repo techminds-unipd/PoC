@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { BackendModel } from '../BackendModel';
+import * as BackendModel  from '../BackendModel';
 import CreateWorkflow from './CreateWorkflow';
 
 function Home() {
 
     const [workflows, setWorkflows] = useState<BackendModel.Workflow[]>([]);
     const [lastCreatedWorkflow, setLastCreatedWorkflow] = useState<BackendModel.Workflow | undefined>(undefined);
-    const [isGoogleConnected, setIsGoogleConnected] = useState<Boolean>(false);
+    const [isGoogleConnected, setIsGoogleConnected] = useState<boolean>(false);
 
     useEffect(() => {
         fetch("http://localhost:3000/auth/google/status")

@@ -2,7 +2,7 @@ import { useDnD } from '../DnDContext';
 import './Sidebar.css';
 
 export default () => {
-    const [_, setService] = useDnD();
+    const [, setService] = useDnD();
 
     const onDragStart = (event:any, nodeType: string) => {
         setService!(nodeType);

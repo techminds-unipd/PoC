@@ -14,7 +14,7 @@ import { HttpModule } from '@nestjs/axios';
       envFilePath: '.env',
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    HttpModule
+    HttpModule,
   ],
   controllers: [AuthController],
   providers: [

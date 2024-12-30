@@ -80,8 +80,7 @@ export class WorkflowsService {
 
     const user = await this.userModel.findOne().exec();
 
-    if (!user)
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     const workflowAndData = {
       workflow: {
@@ -91,24 +90,30 @@ export class WorkflowsService {
       },
       googleTokenFile: {
         token: user.token,
-        refresh_token: "",
-        token_uri: "https://oauth2.googleapis.com/token",
+        refresh_token: '',
+        token_uri: 'https://oauth2.googleapis.com/token',
         client_id: this.configService.get('CLIENT_ID'),
         client_secret: this.configService.get('CLIENT_SECRET'),
-        scopes: ["https://www.googleapis.com/auth/gmail.readonly"],
-        universe_domain: "googleapis.com",
-        account: "",
-        expiry: user.expiry
-      }
+        scopes: ['https://www.googleapis.com/auth/gmail.readonly'],
+        universe_domain: 'googleapis.com',
+        account: '',
+        expiry: user.expiry,
+      },
     };
 
     const { data } = await firstValueFrom(
-      this.httpService.post('http://127.0.0.1:5000/execute', workflowAndData).pipe(
-        catchError(e => {
-          console.log(e);
-          throw new HttpException('Cannot connect to the worker', HttpStatus.SERVICE_UNAVAILABLE);
-        }),
-      ));
+      this.httpService
+        .post('http://127.0.0.1:5000/execute', workflowAndData)
+        .pipe(
+          catchError((e) => {
+            console.log(e);
+            throw new HttpException(
+              'Cannot connect to the worker',
+              HttpStatus.SERVICE_UNAVAILABLE,
+            );
+          }),
+        ),
+    );
 
     return data;
   }

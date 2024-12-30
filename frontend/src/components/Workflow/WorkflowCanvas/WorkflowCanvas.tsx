@@ -52,7 +52,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
         (params:any) => {
             setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', label: "Inserisci l'automazione che desideri", id: getEdgeId()}, eds))
         },
-        [],
+        [getEdgeId, setEdges],
     );
 
     const onDragOver = useCallback((event:any) => {
@@ -87,7 +87,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
 
             setNodes((nds: Node[]) => nds.concat(newNode));
         },
-        [screenToFlowPosition, nodeService],
+        [screenToFlowPosition, nodeService, getNodeId, getNodes, setNodes],
     );
 
     // https://reactflow.dev/examples/interaction/prevent-cycles
