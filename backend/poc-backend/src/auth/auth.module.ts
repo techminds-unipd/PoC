@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GoogleStrategy } from './strategy/google.strategy';
 import { User, UserSchema } from 'src/schemas/user.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { User, UserSchema } from 'src/schemas/user.schema';
       envFilePath: '.env',
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    HttpModule
   ],
   controllers: [AuthController],
   providers: [

@@ -10,6 +10,9 @@ export class User {
 
   @Prop()
   token: string;
+
+  @Prop()
+  expiry: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
