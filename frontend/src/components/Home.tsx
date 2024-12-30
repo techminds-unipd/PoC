@@ -11,7 +11,7 @@ function Home() {
     useEffect(() => {
         fetch("http://localhost:3000/auth/google/status")
             .then(response => response.json())
-            .then(data => setIsGoogleConnected(data))
+            .then(data => setIsGoogleConnected(data.isGoogleConnected))
             .catch(error => console.error(error));
     }, [])
 

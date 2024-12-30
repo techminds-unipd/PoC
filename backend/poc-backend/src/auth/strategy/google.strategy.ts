@@ -22,5 +22,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     const token = accessToken;
     const profileId = profile.id;
     await this.authService.add(profileId, token);
+    return true; // Needed to run service handler
   }
 }

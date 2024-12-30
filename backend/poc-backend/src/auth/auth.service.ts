@@ -28,12 +28,10 @@ export class AuthService {
     }
   }
 
-  handlerLogin() {
-    return 'handlerLogin';
-  }
+  handlerLogin() {}
 
   handlerRedirect() {
-    return 'handlerRedirect';
+    return 'Google account connected! (Now you can close this window)';
   }
 
   async status(): Promise<Boolean>  {
