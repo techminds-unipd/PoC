@@ -6,7 +6,7 @@ import { Workflow } from 'src/schemas/workflow.schema';
 import { User } from 'src/schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
-import { catchError } from 'rxjs/operators';
+import { catchError, firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -102,13 +102,14 @@ export class WorkflowsService {
       }
     };
 
-    console.log(workflowAndData)
+    const { data } = await firstValueFrom(
+      this.httpService.post('http://127.0.0.1:5000/execute', workflowAndData).pipe(
+        catchError(e => {
+          console.log(e);
+          throw new HttpException('Cannot connect to the worker', HttpStatus.SERVICE_UNAVAILABLE);
+        }),
+      ));
 
-    return this.httpService.post('http://127.0.0.1:5000/execute', workflowAndData).pipe(
-      catchError(e => {
-        console.log(e);
-        throw new HttpException('Cannot connect to the worker', HttpStatus.SERVICE_UNAVAILABLE);
-      }),
-    );
+    return data;
   }
 }
