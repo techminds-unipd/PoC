@@ -6,6 +6,7 @@ import { Workflow } from 'src/schemas/workflow.schema';
 import { User } from 'src/schemas/user.schema';
 import mongoose, { Model } from 'mongoose';
 import { HttpService } from '@nestjs/axios';
+import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class WorkflowsService {
@@ -68,19 +69,17 @@ export class WorkflowsService {
       .findOne({ _id: new mongoose.Types.ObjectId(id) })
       .exec();
 
-    const user = await this.userModel.findOne().exec();
-    if (!workflow) {
+    if (!workflow)
       throw new HttpException('Workflow not found', HttpStatus.NOT_FOUND);
-    }
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    // Controllo nodi e archi vuoti
     if (workflow.nodes.length === 0)
       throw new HttpException('No nodes', HttpStatus.BAD_REQUEST);
     if (workflow.edges.length === 0)
       throw new HttpException('No edges', HttpStatus.BAD_REQUEST);
+
+    const user = await this.userModel.findOne().exec();
+
+    if (!user)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
 
     const workflowAndTokens = {
       workflow: {
@@ -90,10 +89,12 @@ export class WorkflowsService {
       },
       googleToken: user.token,
     };
-    this.httpService
-      .post('http://127.0.0.1:5000/execute', workflowAndTokens)
-      .subscribe({
-        next: () => {}, // Ignoring the response
-      });
+
+    return this.httpService.post('http://127.0.0.1:5000/execute', workflowAndTokens).pipe(
+        catchError(e => {
+          console.log(e);
+          throw new HttpException('Cannot connect to the worker', HttpStatus.SERVICE_UNAVAILABLE);
+        }),
+      );
   }
 }

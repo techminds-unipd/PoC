@@ -51,7 +51,7 @@ export class WorkflowsController {
 
   //EXECUTE
   @Get('/:id/execute')
-  async execute(@Param('id') id: string): Promise<void> {
-    this.workflowsService.execute(id);
+  async execute(@Param('id') id: string) {
+    return this.workflowsService.execute(id);
   }
 }
