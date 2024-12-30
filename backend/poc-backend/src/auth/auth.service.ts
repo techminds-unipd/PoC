@@ -37,6 +37,18 @@ export class AuthService {
 
   async status(): Promise<Boolean>  {
     const user = await this.userModel.findOne().exec();
-    return user != null;
+    if (user != null) {
+      const isExpired =  user.expiry < new Date();
+
+      if (isExpired) {
+        await this.userModel
+          .findByIdAndDelete({ _id: user._id })
+          .exec();
+
+      }
+
+      return !isExpired
+    }
+    return false;
   }
 }
