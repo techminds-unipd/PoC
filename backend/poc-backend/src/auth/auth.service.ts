@@ -35,4 +35,9 @@ export class AuthService {
   handlerRedirect() {
     return 'handlerRedirect';
   }
+
+  async status(): Promise<Boolean>  {
+    const user = await this.userModel.findOne().exec();
+    return user != null;
+  }
 }

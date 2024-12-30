@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GoogleGuard } from './guard/google.guard';
+import { User } from 'src/schemas/user.schema';
 
 @Controller('auth')
 export class AuthController {
@@ -16,5 +17,11 @@ export class AuthController {
   @Get('google/redirect')
   handlerRedirect() {
     return this.authService.handlerRedirect();
+  }
+
+  @Get('google/status')
+  async handleStatus(): Promise<Object> {
+    const googleStatus = await this.authService.status()
+    return {isGoogleConnected: googleStatus};
   }
 }
