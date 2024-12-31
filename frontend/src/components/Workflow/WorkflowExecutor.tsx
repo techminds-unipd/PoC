@@ -10,7 +10,6 @@ function WorkflowExecutor({ id }: WorkflowExecutorProps) {
             .catch(error => console.error(error));
     }
 
-
     return (
         <button onClick={execute}>Exec workflow</button>
     );

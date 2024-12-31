@@ -1,8 +1,8 @@
 import { useDnD } from '../DnDContext';
 import './Sidebar.css';
 
-export default () => {
-    const [_, setService] = useDnD();
+const Sidebar = () => {
+    const [, setService] = useDnD();
 
     const onDragStart = (event:any, nodeType: string) => {
         setService!(nodeType);
@@ -24,3 +24,5 @@ export default () => {
         </aside>
     );
 };
+
+export default Sidebar;
