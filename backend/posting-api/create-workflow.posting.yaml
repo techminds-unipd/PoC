@@ -7,18 +7,18 @@ body:
       "name":"Questo è il mio primo bellissimo workflow",
       "nodes":[
         {
-          "id":1,
+          "id":"1",
           "service":"gmail"
         },
         {
-          "id":2,
+          "id":"2",
           "service":"docs"
         }
       ],
       "edges":[
         {
-          "fromNodeId":1,
-          "toNodeId":2,
+          "fromNodeId":"1",
+          "toNodeId":"2",
           "action":"Leggi l'ultima mail non letta e scrivi le persone menzionate in un documento google."
         }
       ]
