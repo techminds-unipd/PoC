@@ -43,16 +43,15 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
     const { getNodes, getEdges } = useReactFlow();
 
     let nodeId = nodes.length;
-    const getNodeId = () => nodeId++;
 
     let edgeId = edges.length;
-    const getEdgeId = () => edgeId++;
 
     const onConnect = useCallback(
         (params:any) => {
+            const getEdgeId = () => edgeId++;
             setEdges((eds) => addEdge({...params, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable', label: "Inserisci l'automazione che desideri", id: getEdgeId()}, eds))
         },
-        [getEdgeId, setEdges],
+        [edgeId, setEdges],
     );
 
     const onDragOver = useCallback((event:any) => {
@@ -62,6 +61,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
 
     const onDrop = useCallback(
         (event:any) => {
+            const getNodeId = () => nodeId++;
             event.preventDefault();
 
             // check if the dropped element is valid
@@ -87,7 +87,7 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
 
             setNodes((nds: Node[]) => nds.concat(newNode));
         },
-        [screenToFlowPosition, nodeService, getNodeId, getNodes, setNodes],
+        [screenToFlowPosition, nodeService, getNodes, setNodes, nodeId],
     );
 
     // https://reactflow.dev/examples/interaction/prevent-cycles
