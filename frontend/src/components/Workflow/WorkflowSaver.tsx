@@ -2,6 +2,7 @@ import {
     type Node,
     type Edge,
 } from '@xyflow/react';
+import './WorkflowSaver.css'
 
 interface WorkflowSaverProps {
     nodes: Node[];

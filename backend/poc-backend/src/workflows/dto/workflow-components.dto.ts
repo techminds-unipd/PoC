@@ -1,6 +1,6 @@
 export class Node {
   readonly id: number;
-  readonly service: 'gmail' | 'docs';
+  readonly service: 'gmail' | 'pastebin';
 }
 
 export class Edge {

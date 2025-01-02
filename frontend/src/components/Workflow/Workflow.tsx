@@ -12,6 +12,7 @@ import {
 import { useEffect } from 'react';
 import { useParams } from "react-router";
 import * as BackendModel from '../../BackendModel';
+import { IoCaretBackOutline } from "react-icons/io5";
 
 function Workflow() {
     const { id, name } = useParams();
@@ -35,7 +36,7 @@ function Workflow() {
 
     return (
         <>
-        <a href="/">Torna alla home</a>
+        <a href="/"><IoCaretBackOutline />Torna alla home</a>
         <WorkflowCanvas
             nodes={nodes}
             edges={edges}
