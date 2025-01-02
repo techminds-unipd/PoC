@@ -11,6 +11,7 @@ from langchain_groq import ChatGroq
 from langgraph.prebuilt import create_react_agent
 import pprint
 import io
+import tempfile
 
 load_dotenv()
 app = Flask(__name__)
@@ -18,47 +19,64 @@ app = Flask(__name__)
 @app.route("/execute", methods=['POST'])
 def execute():
     data = request.get_json()
-    googleToken = data.get('googleTokenFile')
-    #pprint.pprint(googleToken)
-    fake_token_file=io.StringIO(str(googleToken))
-    #token_file_name=create_token_file(googleToken)
-    credentials = get_gmail_credentials(
-        token_file=fake_token_file,
-        client_secrets_file="credentials.json",
-        scopes=["https://www.googleapis.com/auth/gmail.readonly"]
-    )
-    #api_resource = build_resource_service(credentials)
-    #toolkit= GmailToolkit(api_resource=api_resource)
-    #tools=toolkit.get_tools()
-    #llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0.1)
-    #SYSTEM_PROMPT="You are a bot that takes a request in italian or english and uses the appropriate tools to satisfy it. The final answer MUST BE in the same language as the user prompt, but the reasoning MUST BE in english."
-    #graph = create_react_agent(llm, tools)
-    #inputs={"messages": [("user", "Summarize the latest email.") ]}
-    #for s in graph.stream(inputs, stream_mode="values"):
-    #    message = s["messages"][-1]
-    #    if isinstance(message, tuple):
-    #        print(message)
-    #    else:
-    #        message.pretty_print()
+    google_token = data.get('googleTokenFile')
+    workflow = data.get('workflow')
+    token_file_path=create_token_file(google_token)
+    print(token_file_path)
+    # Parsing workflow
+    for edge in workflow["edges"]:
+      fromNodeService = getWorkflowServiceById(workflow["nodes"], edge["fromNodeId"])
+      toNodeService   = getWorkflowServiceById(workflow["nodes"], edge["toNodeId"])
+      #*----TEMP----
+      fromNodeService = "GmailToolkit"
+      toNodeService = "GmailToolkit"
+      #*----END-TEMP----
+      agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}"
+      run_agent(agent_query, token_file_path)
     #TODO: Capire come ottenere l'ultimo messaggio in formato clean
-    #delete_secrets_file(token_file_name)
     pprint.pprint("----------------FINE EXECUTE----------------")
     return {'status': 'success'}
 
 
 
 #Crea il file json con le credenziali dell'utente in modo da usare il toolkit Google
-def create_token_file(googleToken):
-    if googleToken:
-        file_name='token'+str(hash(googleToken))+'.json'
-        with open(file_name, mode="w") as token_file:
-            with open('token_template.json', 'r') as template_file:
-                json_file = json.load(template_file)
-            json_file['token'] = googleToken
-            json.dump(json_file, token_file)
-        return file_name
+#Ritorna il percorso di un tempfile
+def create_token_file(google_token):
+    if google_token:
+        token_temp_file=tempfile.NamedTemporaryFile(mode='w', delete=False) #! vedere meglio come fare il delete per non avere file permanenti
+        token_temp_file.write(json.dumps(google_token))
+        token_temp_file.flush()
+        return token_temp_file.name
     return False
 
-#Funzione chiamata alla fine della computazione dell'agente, per rimuovere le credenziali dell'utente
-def delete_secrets_file(token_file_name):
-    os.remove(token_file_name)
+
+def getWorkflowServiceById(nodes, nodeId):
+  for node in nodes:
+    if node["id"] == nodeId:
+      return node["service"]
+    #! Non è presente una gestione degli errori
+
+
+def run_agent(query, token_file_path):
+    llm = ChatGroq(model="gemma2-9b-it", temperature=0)
+
+    credentials = get_gmail_credentials(
+        token_file=token_file_path,
+        client_secrets_file="credentials.json",
+        scopes=["https://www.googleapis.com/auth/gmail.readonly"]
+    )
+    api_resource = build_resource_service(credentials=credentials)
+    toolkit = GmailToolkit(api_resource=api_resource)
+    #tools=toolkit.get_tools()
+    tools = list(filter(lambda x: x.name!='send_gmail_message', toolkit.get_tools()))
+    print(tools)
+    agent_executor = create_react_agent(llm, tools)
+
+    events = agent_executor.stream(
+      {"messages": [("user", query)]},
+      stream_mode="values",
+    )
+    for event in events:
+      event["messages"][-1].pretty_print()
+
+    print("END Workflow")
