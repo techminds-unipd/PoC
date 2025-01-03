@@ -12,6 +12,7 @@ from langgraph.prebuilt import create_react_agent
 import pprint
 import io
 import tempfile
+from custom_tools.Pastebin import PastebinCreateBinTool
 
 load_dotenv()
 app = Flask(__name__)
@@ -29,7 +30,7 @@ def execute():
       toNodeService   = getWorkflowServiceById(workflow["nodes"], edge["toNodeId"])
       #*----TEMP----
       fromNodeService = "GmailToolkit"
-      toNodeService = "GmailToolkit"
+      toNodeService = "PastebinTool"
       #*----END-TEMP----
       agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}"
       run_agent(agent_query, token_file_path)
@@ -66,10 +67,11 @@ def run_agent(query, token_file_path):
         scopes=["https://www.googleapis.com/auth/gmail.readonly"]
     )
     api_resource = build_resource_service(credentials=credentials)
+
     toolkit = GmailToolkit(api_resource=api_resource)
-    #tools=toolkit.get_tools()
     tools = list(filter(lambda x: x.name!='send_gmail_message', toolkit.get_tools()))
-    print(tools)
+    tools.append(PastebinCreateBinTool())
+
     agent_executor = create_react_agent(llm, tools)
 
     events = agent_executor.stream(
