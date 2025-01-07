@@ -24,7 +24,6 @@ class GCalendarSearchEventTool(BaseTool):
 
     def __init__(self, token_file_path):
         super().__init__()
-        print(token_file_path)
         if os.path.exists(token_file_path):
             self.creds = Credentials.from_authorized_user_file(token_file_path, SCOPES)
         if not self.creds or not self.creds.valid:
