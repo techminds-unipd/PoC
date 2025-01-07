@@ -23,22 +23,27 @@ interface WorkflowExecutorProps {
 function WorkflowExecutor({ id }: WorkflowExecutorProps) {
 
     const [open, setOpen] = useState(false);
-    const [response, setResponse] = useState('');
+    const [dialogBody, setDialogBody] = useState('');
+    const [dialogTitle, setDialogTitle] = useState('');
 
-    const handleClickOpen = () => {
-        execute();
+    const handleClickOpen = async () => {
+        await execute();
+        setOpen(true);
       };
       const handleClose = () => {
         setOpen(false);
       };
     const execute = () => {
         return fetch(`http://localhost:3000/workflows/${id}/execute`)
-            .then(response => console.log(response.json()))
-            .then(response=> setResponse(JSON.stringify(response, null, 2)))
-            .then(() => setOpen(true))
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setDialogTitle(data.status)
+                setDialogBody(data.stages)
+            })
             .catch(error => {
                 console.error(error);
-                setResponse('Error executing workflow')
+                setDialogBody('Error executing workflow')
             });
     }
 
@@ -47,7 +52,7 @@ function WorkflowExecutor({ id }: WorkflowExecutorProps) {
         <button onClick={handleClickOpen}>Exec workflow</button>
         <BootstrapDialog onClose={handleClose} open={open}>
             <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-                Agent response
+                Agent response: {dialogTitle}
             </DialogTitle>
             <IconButton
           aria-label="close"
@@ -58,11 +63,11 @@ function WorkflowExecutor({ id }: WorkflowExecutorProps) {
             top: 8,
             color: theme.palette.grey[500],
           })}
-        >
+        > <CloseIcon />
         </IconButton>
         <DialogContent dividers>
           <Typography gutterBottom>
-            {response}
+            {dialogBody}
           </Typography>
         </DialogContent>
         </BootstrapDialog>
