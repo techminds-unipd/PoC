@@ -13,7 +13,8 @@ import pprint
 import io
 import tempfile
 from custom_tools.Pastebin import PastebinCreateBinTool
-from custom_tools.GCalendar import GCalendarCreateEventTool
+from custom_tools.GCalendarCreateEvent import GCalendarCreateEventTool
+from custom_tools.GCalendarSearchEvent import GCalendarSearchEventTool
 import datetime, time
 
 load_dotenv()
@@ -26,25 +27,46 @@ def execute():
     workflow = data.get('workflow')
     token_file_path=create_token_file(google_token)
 
-    # Parsing workflow
     for edge in workflow["edges"]:
-      fromNodeService = getWorkflowServiceById(workflow["nodes"], edge["fromNodeId"])
-      toNodeService   = getWorkflowServiceById(workflow["nodes"], edge["toNodeId"])
-      #*----TEMP----
-      fromNodeService = "GmailToolkit"
-      toNodeService = "GoogleCalendarTool"
-      #*----END-TEMP----
-      agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}.\n The current time is: {datetime.datetime.now()} and timezone: {time.tzname}"
-      run_agent(agent_query, token_file_path)
-    #TODO: Capire come ottenere l'ultimo messaggio in formato clean
+        fromNodeService = getWorkflowServiceById(workflow["nodes"], edge["fromNodeId"])
+        toNodeService   = getWorkflowServiceById(workflow["nodes"], edge["toNodeId"])
+
+        #! Questo è qui solo perchè il backend non salva ancora pastebin ma gdocs
+        if toNodeService == "gDocs":
+            toNodeService = "pastebin"
+
+        tools = returnRightToolsFromService(fromNodeService, token_file_path) + returnRightToolsFromService(toNodeService, token_file_path)
+
+        agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}.\n The current time is: {datetime.datetime.now()} and timezone: {time.tzname}"
+
+        results = run_agent(agent_query, tools)
+        print(results)
+
+        #TODO: Capire come ottenere l'ultimo messaggio in formato clean
 
     pprint.pprint("----------------FINE EXECUTE----------------")
     return {'status': 'success'}
 
+def returnRightToolsFromService(serviceName, token_file_path):
+    credentials = get_gmail_credentials(
+        token_file=token_file_path,
+        client_secrets_file="credentials.json",
+        scopes=["https://www.googleapis.com/auth/gmail", "https://www.googleapis.com/auth/calendar"]
+    )
+    api_resource = build_resource_service(credentials=credentials)
+
+    match serviceName:
+            case "gmail":
+                toolkit = GmailToolkit(api_resource=api_resource)
+                return list(filter(lambda x: x.name!='send_gmail_message', toolkit.get_tools()))
+            case "googleCalendar":
+                return [GCalendarCreateEventTool(token_file_path), GCalendarSearchEventTool(token_file_path)]
+            case "pastebin":
+                return [PastebinCreateBinTool()]
+            case _:
+                return []
 
 
-#Crea il file json con le credenziali dell'utente in modo da usare il toolkit Google
-#Ritorna il percorso di un tempfile
 def create_token_file(google_token):
     if google_token:
         token_temp_file=tempfile.NamedTemporaryFile(mode='w', delete=False) #! vedere meglio come fare il delete per non avere file permanenti
@@ -58,31 +80,18 @@ def getWorkflowServiceById(nodes, nodeId):
   for node in nodes:
     if node["id"] == nodeId:
       return node["service"]
-    #! Non è presente una gestione degli errori
+  return ""
 
-
-def run_agent(query, token_file_path):
+def run_agent(query, tools):
     llm = ChatGroq(model="gemma2-9b-it", temperature=0)
-
-    credentials = get_gmail_credentials(
-        token_file=token_file_path,
-        client_secrets_file="credentials.json",
-        scopes=["https://www.googleapis.com/auth/gmail", "https://www.googleapis.com/auth/calendar"]
-    )
-    api_resource = build_resource_service(credentials=credentials)
-
-    toolkit = GmailToolkit(api_resource=api_resource)
-    tools = list(filter(lambda x: x.name!='send_gmail_message', toolkit.get_tools()))
-    tools.append(PastebinCreateBinTool())
-    tools.append(GCalendarCreateEventTool(token_file_path))
-
     agent_executor = create_react_agent(llm, tools)
 
     events = agent_executor.stream(
-      {"messages": [("user", query)]},
-      stream_mode="values",
+        {"messages": [("user", query)]},
+        stream_mode="values",
     )
     for event in events:
-      event["messages"][-1].pretty_print()
+        event["messages"][-1].pretty_print()
 
     print("END Workflow")
+    return events
