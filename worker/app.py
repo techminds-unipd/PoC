@@ -13,6 +13,8 @@ import pprint
 import io
 import tempfile
 from custom_tools.Pastebin import PastebinCreateBinTool
+from custom_tools.GCalendar import GCalendarCreateEventTool
+import datetime, time
 
 load_dotenv()
 app = Flask(__name__)
@@ -23,18 +25,19 @@ def execute():
     google_token = data.get('googleTokenFile')
     workflow = data.get('workflow')
     token_file_path=create_token_file(google_token)
-    print(token_file_path)
+
     # Parsing workflow
     for edge in workflow["edges"]:
       fromNodeService = getWorkflowServiceById(workflow["nodes"], edge["fromNodeId"])
       toNodeService   = getWorkflowServiceById(workflow["nodes"], edge["toNodeId"])
       #*----TEMP----
       fromNodeService = "GmailToolkit"
-      toNodeService = "PastebinTool"
+      toNodeService = "GoogleCalendarTool"
       #*----END-TEMP----
-      agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}"
+      agent_query = f"DESCRIBE EVERY tool you call and show me with which arguments\nUSING the tools from {fromNodeService}\nDO THIS action: \"{edge['action']}\"\nAT THE END use the tools of {toNodeService}.\n The current time is: {datetime.datetime.now()} and timezone: {time.tzname}"
       run_agent(agent_query, token_file_path)
     #TODO: Capire come ottenere l'ultimo messaggio in formato clean
+
     pprint.pprint("----------------FINE EXECUTE----------------")
     return {'status': 'success'}
 
@@ -64,13 +67,14 @@ def run_agent(query, token_file_path):
     credentials = get_gmail_credentials(
         token_file=token_file_path,
         client_secrets_file="credentials.json",
-        scopes=["https://www.googleapis.com/auth/gmail.readonly"]
+        scopes=["https://www.googleapis.com/auth/gmail", "https://www.googleapis.com/auth/calendar"]
     )
     api_resource = build_resource_service(credentials=credentials)
 
     toolkit = GmailToolkit(api_resource=api_resource)
     tools = list(filter(lambda x: x.name!='send_gmail_message', toolkit.get_tools()))
     tools.append(PastebinCreateBinTool())
+    tools.append(GCalendarCreateEventTool(token_file_path))
 
     agent_executor = create_react_agent(llm, tools)
 
