@@ -19,8 +19,7 @@ import {
 import Sidebar from './Sidebar/Sidebar';
 import { DnDProvider, useDnD } from './DnDContext';
 import EditableEdge from './EditableEdge';
-
-import '@xyflow/react/styles.css';
+import '@xyflow/react/dist/style.css';
 
 interface WorkflowCanvasProps {
     nodes: Node[];

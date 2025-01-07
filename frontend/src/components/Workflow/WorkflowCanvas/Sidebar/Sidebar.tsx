@@ -18,6 +18,9 @@ const Sidebar = () => {
             <div className="dndnode" onDragStart={(event) => onDragStart(event, 'pastebin')} draggable>
                 Pastebin
             </div>
+            <div className='dndnode' onDragStart={(event) => onDragStart(event, 'calendar')} draggable>
+                Calendar
+            </div>
         </aside>
     );
 };
