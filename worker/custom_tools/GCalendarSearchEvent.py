@@ -3,7 +3,6 @@ from langchain_core.callbacks import CallbackManagerForToolRun
 from typing import Type, Optional
 from pydantic import BaseModel, Field
 import os.path
-import datetime
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -14,7 +13,9 @@ import json
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
 
 class GCalendarSearchEventSchema(BaseModel):
-    query: str = Field(description="Free text search terms to find events that match these terms")
+    query: Optional[str] = Field(description="Free text search terms to find events that match these terms")
+    timeMin: str = Field(description="Lower bound for an event's end time to filter by. Must be an RFC3339 timestamp with mandatory time zone offset, for example, 2011-06-03T10:00:00-07:00")
+    timeMax: str = Field(description="Upper bound for an event's end time to filter by. Must be an RFC3339 timestamp with mandatory time zone offset, for example, 2011-06-03T10:00:00-07:00")
 
 class GCalendarSearchEventTool(BaseTool):
     name: str = "google_calendar_search"
@@ -29,11 +30,14 @@ class GCalendarSearchEventTool(BaseTool):
         if not self.creds or not self.creds.valid:
             exit(1)
 
-    def search_event(self, query):
+    def search_event(self, query, timeMin, timeMax):
         try:
-            now = datetime.datetime.utcnow().isoformat() + "Z"
             service = build("calendar", "v3", credentials=self.creds)
-            events_result = service.events().list(calendarId='primary', timeMin=now, singleEvents=True, orderBy="startTime", q=query).execute()
+            events_result = None
+            if query is not None:
+                events_result = service.events().list(calendarId='primary', timeMin=timeMin, timeMax=timeMax, singleEvents=True, orderBy="startTime", q=query).execute()
+            else:
+                events_result = service.events().list(calendarId='primary', timeMin=timeMin, timeMax=timeMax, singleEvents=True, orderBy="startTime").execute()
             events = events_result.get("items", [])
             if not events:
                 return "No upcoming events found."
@@ -45,8 +49,10 @@ class GCalendarSearchEventTool(BaseTool):
 
     def _run(
             self,
-            query: str,
+            timeMin: str,
+            timeMax: str,
+            query: Optional[str] = None,
             run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
-        result = self.search_event(query)
+        result = self.search_event(query, timeMin, timeMax)
         return result
