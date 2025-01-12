@@ -13,13 +13,13 @@ const Sidebar = () => {
         <aside>
             <div className="description">Seleziona il blocco di automazione che desideri.</div>
             <div className="dndnode" onDragStart={(event) => onDragStart(event, 'gmail')} draggable>
-                Gmail Node
+                Gmail
             </div>
-            <div className="dndnode" onDragStart={(event) => onDragStart(event, 'googleCalendar')} draggable>
-                Calendar Node
+            <div className="dndnode" onDragStart={(event) => onDragStart(event, 'pastebin')} draggable>
+                Pastebin
             </div>
-            <div className="dndnode" onDragStart={(event) => onDragStart(event, 'gDocs')} draggable>
-                GDocs Node
+            <div className='dndnode' onDragStart={(event) => onDragStart(event, 'calendar')} draggable>
+                Calendar
             </div>
         </aside>
     );

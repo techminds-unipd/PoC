@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as BackendModel  from '../BackendModel';
 import CreateWorkflow from './CreateWorkflow';
+import './Style.css'
 
 function Home() {
 

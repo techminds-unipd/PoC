@@ -1,6 +1,6 @@
 export interface Node {
   readonly id: number;
-  readonly service: 'gmail' | 'docs';
+  readonly service: 'gmail' | 'pastebin' | 'calendar';
 }
 
 export interface Edge {

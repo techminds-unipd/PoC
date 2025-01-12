@@ -55,7 +55,7 @@ export default function EditableEdge({
                 >
                     <textarea onChange={handleTextChange} value={textInput}/>
                 </div>
-        </EdgeLabelRenderer>
+            </EdgeLabelRenderer>
         </>
     );
 }

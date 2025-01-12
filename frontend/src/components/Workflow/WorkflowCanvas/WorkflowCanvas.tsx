@@ -19,7 +19,6 @@ import {
 import Sidebar from './Sidebar/Sidebar';
 import { DnDProvider, useDnD } from './DnDContext';
 import EditableEdge from './EditableEdge';
-
 import '@xyflow/react/dist/style.css';
 
 interface WorkflowCanvasProps {
@@ -82,9 +81,9 @@ const DnDFlow = ({nodes, edges, onNodesChange, onEdgesChange, setNodes, setEdges
                 position,
                 data: { label: nodeService },
                 sourcePosition: 'right' as Position,
-                targetPosition: 'left' as Position
+                targetPosition: 'left' as Position,
             };
-
+            if(newNode.data.label=='pastebin') newNode.type='output'
             setNodes((nds: Node[]) => nds.concat(newNode));
         },
         [screenToFlowPosition, nodeService, getNodes, setNodes, nodeId],

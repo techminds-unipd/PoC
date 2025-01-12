@@ -12,6 +12,7 @@ import {
 import { useEffect } from 'react';
 import { useParams } from "react-router";
 import * as BackendModel from '../../BackendModel';
+import { IoCaretBackOutline } from "react-icons/io5";
 
 function Workflow() {
     const { id, name } = useParams();
@@ -24,7 +25,9 @@ function Workflow() {
             .then(data => {
                 setNodes(data.nodes.map((node:BackendModel.Node) => {
                     const xPosition = String(node.id*500);
-                    return {id: node.id, position: {x: xPosition, y: 0}, data: {label: node.service}, sourcePosition: 'right' as Position, targetPosition: 'left' as Position};
+                    let nodeType: string | undefined = undefined;
+                    if(node.service=='pastebin') nodeType='output'
+                    return {id: node.id, position: {x: xPosition, y: 0}, data: {label: node.service}, sourcePosition: 'right' as Position, targetPosition: 'left' as Position, type: nodeType};
                 }))
                 setEdges(data.edges.map((edge:BackendModel.Edge) => {
                     return {id: `e${edge.fromNodeId}-${edge.toNodeId}`, source: edge.fromNodeId, target: edge.toNodeId, label: edge.action, markerEnd: { type: MarkerType.ArrowClosed }, type: 'editable'};
@@ -35,7 +38,7 @@ function Workflow() {
 
     return (
         <>
-        <a href="/">Torna alla home</a>
+        <a href="/"><IoCaretBackOutline />Torna alla home</a>
         <WorkflowCanvas
             nodes={nodes}
             edges={edges}
