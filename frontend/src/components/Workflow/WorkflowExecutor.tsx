@@ -38,8 +38,13 @@ function WorkflowExecutor({ id }: WorkflowExecutorProps) {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                setDialogTitle(data.status)
-                setDialogBody(data.stages)
+                if(data.status){
+                  setDialogTitle(data.status)
+                  setDialogBody(data.stages)
+                }else{
+                  setDialogTitle('Error' + data.statusCode)
+                  setDialogBody(data.message)
+                }
             })
             .catch(error => {
                 console.error(error);
@@ -51,7 +56,7 @@ function WorkflowExecutor({ id }: WorkflowExecutorProps) {
         <>
         <button onClick={handleClickOpen}>Exec workflow</button>
         <BootstrapDialog onClose={handleClose} open={open}>
-            <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+            <DialogTitle sx={{ m: 1, p: 1 , pr: 5}} id="customized-dialog-title">
                 Agent response: {dialogTitle}
             </DialogTitle>
             <IconButton
